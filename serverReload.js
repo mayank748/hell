@@ -83,17 +83,19 @@ io.on('connection', async socket => {
         userPresent.then(elementValue => {
             // console.log(elementValue.rows[0].storename);
             if (elementValue.rows[0] && elementValue.rows[0].storename === roomID) {
-                socket.emit('userDisconnectedWithError');
+                //socket.emit('userDisconnectedWithError');
             } else {
                 socket.emit('yourID', socket.id);
             }
         })
         console.log('after hitting')
         usersInThisRoom = users[roomID]?users[roomID].filter(id => id !== socket.id):{};
+
         if (users[roomID]) {
             const length = users[roomID].length;
             if (length === 2) {
                 socket.emit("refreseedUser", usersInThisRoom);
+                socket.emit("all users", users);
                 socket.emit("room full");
                 return;
             }
@@ -101,13 +103,28 @@ io.on('connection', async socket => {
         } else {
             users[roomID] = [socket.id];
         }
+        socket.emit('yourID', socket.id);
+        // socket.on('userId',(data)=>{
+        //     console.log('data',data);
+        //     if (users[roomID]) {
+        //         const length = users[roomID].length;
+        //         if (length === 2) {
+        //             socket.emit("refreseedUser", usersInThisRoom);
+        //             socket.emit("room full");
+        //             //return;
+        //         }
+        //         users[roomID].push(data);
+        //     } else {
+        //         users[roomID] = [data];
+        //     }
+        // })
+
         // socketToRoom[socket.id] = roomID;
         
         
         console.log('usersInThisRoom', usersInThisRoom);
         socket.emit("refreseedUser", usersInThisRoom);
 
-        socket.emit('yourID', socket.id);
         // socket.emit("refreseedUser", usersInThisRoom);
 
         socket.emit("all users", users);
